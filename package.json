@@ -52,7 +52,7 @@
     "eslint": "9.11.0",
     "eslint-plugin-astro": "1.2.4",
     "eslint-plugin-jsx-a11y": "6.10.0",
-    "eslint-plugin-tailwindcss": "3.17.4",
+    "eslint-plugin-tailwindcss": "3.17.5",
     "prettier": "3.3.3",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-css-order": "2.1.2",
