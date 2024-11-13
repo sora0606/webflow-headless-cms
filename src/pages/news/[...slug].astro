@@ -1,0 +1,51 @@
+---
+import Hero from '@components/Hero.astro';
+import Layout from '@layouts/Layout.astro';
+import type { CollectionItem, Site } from 'webflow-api/api';
+import { SITE_DATE, COLLECTIONS_DATE, COLLECTION_DATE, COLLECTION_ITEM } from '@hooks/fetchDates';
+import { formatDate } from '@hooks/date-time-formatter';
+
+const sites = await SITE_DATE();
+const collections = await COLLECTIONS_DATE((sites as Site).id);
+const newsItems = await COLLECTION_DATE(collections.filter((c) => c.slug === 'news').at(0).id);
+
+export async function getStaticPaths() {
+  return newsItems.map((entry) => ({
+    params: { slug: entry.fieldData.slug },
+    props: { entry },
+  }));
+}
+
+const entry = await COLLECTION_ITEM(
+  collections.filter((c) => c.slug === 'news').at(0).id,
+  newsItems.filter((i) => i.fieldData.slug === Astro.params.slug).at(0).id,
+);
+---
+
+<Layout title={(entry as CollectionItem).fieldData.name}>
+  <main>
+    <article class="container mx-auto">
+      <header>
+        <h1 class="mt-16 text-xl font-bold">{(entry as CollectionItem).fieldData.name}</h1>
+        <p class="mt-2 text-sm">
+          <time datetime="{{ post.date('Y-m-d H:i:s') }}"
+            >{formatDate((entry as CollectionItem).createdOn)}</time
+          >
+        </p>
+      </header>
+
+      <div class="mb-12 mt-8 border-t"></div>
+
+      <img
+        src={(entry as CollectionItem).fieldData.thumbnail.url}
+        alt={(entry as CollectionItem).fieldData.thumbnail.alt}
+        class="aspect-[3/1] min-h-56 w-full object-cover"
+      />
+
+      <div
+        class="prose mx-auto mt-16 max-w-3xl"
+        set:html={(entry as CollectionItem).fieldData.content}
+      />
+    </article>
+  </main>
+</Layout>

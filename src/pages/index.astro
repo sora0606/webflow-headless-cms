@@ -1,0 +1,85 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Hero from '@components/Hero.astro';
+import ButtonBase from '@components/ButtonBase.astro';
+import { formatDate } from '@hooks/date-time-formatter';
+import axiosInstance from '../utils/axiosInstance';
+
+const sites = (await axiosInstance.get('sites')).data.at(0);
+const collections = (await axiosInstance.get(`/collections/${sites.id}`)).data;
+const news = (
+  await axiosInstance.get(
+    `/collections/${collections.filter((c) => c.slug === 'news').at(0).id}/details`,
+  )
+).data;
+const newsItems = (
+  await axiosInstance.get(
+    `/collections/${collections.filter((c) => c.slug === 'news').at(0).id}/items`,
+  )
+).data;
+---
+
+<Layout isHome tagline="AstroとWebflow CMS APIを活用した静的サイト開発テンプレート。">
+  <main>
+    <Hero title={sites.displayName.toLocaleUpperCase()}>
+      AstroとWebflow CMS APIを活用した静的サイト開発テンプレート。<br />
+      Webflowで管理するコンテンツをAstroで高速表示し、軽快なユーザー体験を実現。
+    </Hero>
+
+    <img
+      class="aspect-[3/1] min-h-56 w-full object-cover"
+      src="https://picsum.photos//768/400?grayscale"
+      alt=""
+      decoding="async"
+    />
+
+    <section class="container mx-auto mt-16 max-w-4xl">
+      <h2 class="font-bold">About</h2>
+
+      <div class="mt-8 space-y-6 text-xl">
+        <p>
+          左手の渚には、まだまだ小さな子どもたちや親たちやなんかいて、家庭教師にやとわれていたのでした。そして気をつけて見ると、野原はまるで幻燈のようでした。汽車が小さな小屋の前を通るのですからしかたありませんや。
+        </p>
+        <p>
+          鷺の方はレンズが薄いのでわずかの光る粒すなわち星がたくさん見えてきました。水も……鳥捕りが言いかけたとき、切符をしっかりもっておいで。ですからもしもこの天の川がほんとうに川だと考えるなら、もっと天の川とよく似ています。
+        </p>
+        <p>
+          ああごらん、あすこにいるのはぼくの影法師はコンパスだ。では今日はその銀河の水はちらちら小さな波をたてたり、虹のようにはげしく振りました。みんなは、一ぺんにジョバンニの胸に集まっていました。
+        </p>
+      </div>
+
+      <div class="mt-8 flex justify-center">
+        <ButtonBase href="/about">さらに詳しく</ButtonBase>
+      </div>
+    </section>
+
+    <section id="news" class="container mx-auto mt-16 max-w-4xl">
+      <h2 class="font-bold">{news.displayName}</h2>
+
+      <ol class="mt-8 divide-y">
+        {
+          newsItems
+            .sort((a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime())
+            .slice(0, 5)
+            .map((post) => (
+              <li>
+                <a
+                  class="flex items-center justify-between gap-x-6 py-3"
+                  href={`/${news.slug}/${post.fieldData.slug}`}
+                >
+                  {post.fieldData.name}
+                  <time class="text-sm" datetime="{ post.createdOn }">
+                    {formatDate(post.createdOn)}
+                  </time>
+                </a>
+              </li>
+            ))
+        }
+      </ol>
+
+      <div class="mt-8 flex justify-center">
+        <ButtonBase href={`/${news.slug}`}>さらに表示</ButtonBase>
+      </div>
+    </section>
+  </main>
+</Layout>

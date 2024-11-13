@@ -1,0 +1,43 @@
+---
+import Hero from '@components/Hero.astro';
+import Layout from '@layouts/Layout.astro';
+import type { Site } from 'webflow-api/api';
+import { SITE_DATE, COLLECTIONS_DATE, COLLECTION_DATE } from '@hooks/fetchDates';
+import { formatDate } from '@hooks/date-time-formatter';
+import { Debug } from 'astro:components';
+
+const sites = await SITE_DATE();
+const collections = await COLLECTIONS_DATE((sites as Site).id);
+const news = collections.filter((c) => c.slug === 'news').at(0);
+const newsItems = await COLLECTION_DATE(collections.filter((c) => c.slug === 'news').at(0).id);
+
+const title = news.displayName;
+---
+
+<Layout title={title}>
+  <main>
+    <Hero title={title} />
+
+    <div class="container prose mx-auto max-w-3xl">
+      <ol class="divide-y">
+        {
+          newsItems
+            .sort((a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime())
+            .map((post) => (
+              <li>
+                <a
+                  class="flex items-center justify-between gap-x-6 py-3"
+                  href={`/${news.slug}/${post.fieldData.slug}`}
+                >
+                  {post.fieldData.name}
+                  <time class="text-sm" datetime="{ post.createdOn }">
+                    {formatDate(post.createdOn)}
+                  </time>
+                </a>
+              </li>
+            ))
+        }
+      </ol>
+    </div>
+  </main>
+</Layout>

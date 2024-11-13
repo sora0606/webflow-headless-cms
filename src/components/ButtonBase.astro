@@ -1,0 +1,8 @@
+---
+const { label, ...props } = Astro.props;
+---
+
+<a
+  class="inline-flex items-center gap-x-1 rounded border border-slate-300 px-3 py-2 align-middle text-sm"
+  {...props}><slot /></a
+>
