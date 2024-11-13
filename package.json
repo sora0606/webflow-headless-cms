@@ -28,7 +28,7 @@
     "@astrojs/node": "8.3.4",
     "@astrojs/react": "3.6.2",
     "@astrojs/sitemap": "3.1.6",
-    "@astrojs/tailwind": "5.1.1",
+    "@astrojs/tailwind": "5.1.2",
     "@tailwindcss/container-queries": "0.1.1",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
